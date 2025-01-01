@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## UNRELEASED
+
+ - WGPU renderer: Changed `flush_to_surface()` API to return a command buffer,
+   to let the application decide when to submit.
+
+## [0.11.3] - 2024-12-26
+
+ - WGPU renderer: Fix crash when rendering without always calling `set_size()`. (#226)
+
 ## [0.11.1] - 2024-11-17
 
  - No code changes, just a release for docs.rs.
@@ -217,3 +226,6 @@ All notable changes to this project will be documented in this file.
 [0.9.2]: https://github.com/femtovg/femtovg/releases/tag/v0.9.2
 [0.10.0]: https://github.com/femtovg/femtovg/releases/tag/v0.10.0
 [0.10.1]: https://github.com/femtovg/femtovg/releases/tag/v0.10.1
+[0.11.0]: https://github.com/femtovg/femtovg/releases/tag/v0.11.0
+[0.11.1]: https://github.com/femtovg/femtovg/releases/tag/v0.11.1
+[0.11.3]: https://github.com/femtovg/femtovg/releases/tag/v0.11.3

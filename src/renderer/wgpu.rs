@@ -294,6 +294,7 @@ impl Renderer for WGPURenderer {
     type Image = Image;
     type NativeTexture = wgpu::Texture;
     type Surface = wgpu::Texture;
+    type CommandBuffer = wgpu::CommandBuffer;
 
     fn set_size(&mut self, _width: u32, _height: u32, _dpi: f32) {}
 
@@ -303,7 +304,7 @@ impl Renderer for WGPURenderer {
         images: &mut crate::image::ImageStore<Self::Image>,
         verts: &[super::Vertex],
         commands: Vec<super::Command>,
-    ) {
+    ) -> Self::CommandBuffer {
         self.screen_view[0] = surface_texture.width() as f32;
         self.screen_view[1] = surface_texture.height() as f32;
 
@@ -356,6 +357,8 @@ impl Renderer for WGPURenderer {
             stencil_buffer.clone(),
             vertex_buffer,
         );
+        // Ensure that we have one initial render pass, in case the first command is not SetRenderTarget
+        render_pass_builder.set_render_target_screen();
 
         let mut pipeline_and_bindgroup_mapper = CommandToPipelineAndBindGroupMapper::new(
             self.device.clone(),
@@ -459,11 +462,13 @@ impl Renderer for WGPURenderer {
 
         drop(render_pass_builder);
 
-        self.queue.submit(Some(encoder.finish()));
+        let command_buffer = encoder.finish();
 
         self.pipeline_cache
             .borrow_mut()
             .retain(|_, cached_pipeline| std::mem::replace(&mut cached_pipeline.accessed, false));
+
+        command_buffer
     }
 
     fn alloc_image(&mut self, info: crate::ImageInfo) -> Result<Self::Image, crate::ErrorKind> {
