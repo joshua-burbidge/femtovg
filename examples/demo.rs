@@ -17,7 +17,26 @@ mod helpers;
 use helpers::PerfGraph;
 use helpers::WindowSurface;
 
+fn log_wgpu() {
+    #[cfg(not(target_arch = "wasm32"))]
+    println!("wgpu");
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("wgpu").into());
+}
+
+fn log_opengl() {
+    #[cfg(not(target_arch = "wasm32"))]
+    println!("non-wgpu");
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("non-wgpu").into());
+}
+
 fn main() {
+    #[cfg(not(feature = "wgpu"))]
+    log_opengl();
+    #[cfg(feature = "wgpu")]
+    log_wgpu();
+
     #[cfg(not(target_arch = "wasm32"))]
     helpers::start(1000, 600, "femtovg demo", true);
     #[cfg(target_arch = "wasm32")]

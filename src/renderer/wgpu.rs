@@ -172,6 +172,8 @@ impl WGPURenderer {
     /// Creates a new renderer for the device.
     pub fn new(device: Arc<wgpu::Device>, queue: Arc<wgpu::Queue>) -> Self {
         let module = wgpu::include_wgsl!("wgpu/shader.wgsl");
+        // #[cfg(target_arch = "wasm32")]
+        // web_sys::console::log_1(&format!("{:?}", module).into());
         let shader_module = Rc::new(device.create_shader_module(module));
 
         let texture_descriptor = wgpu::TextureDescriptor {
@@ -1195,6 +1197,11 @@ impl PipelineState {
                 if self.render_to_texture { 1.0 } else { 0. },
             ),
         ]);
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("{:?}", constants).into());
+        println!("{:?}", constants);
+        // #[cfg(target_arch = "wasm32")]
+        // web_sys::console::log_1(&format!("{:?}", shader_module).into());
 
         device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: None,
