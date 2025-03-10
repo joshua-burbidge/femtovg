@@ -18,9 +18,10 @@ struct Params {
     image_blur_filter_coeff: vec3<f32>,
 }
 
-override shader_type: i32;
-override enable_glyph_texture: bool;
-override render_to_texture: bool;
+override shader_type: i32 = 0;
+override enable_glyph_texture: bool = false;
+override render_to_texture: bool = false;
+// override test: i32;
 
 const SHADER_TYPE_FillGradient: i32 = 0;
 const SHADER_TYPE_FillImage: i32 = 1;
@@ -64,6 +65,9 @@ fn vs_main(
     var result: VertexOutput;
     result.ftcoord = tcoord;
     result.fpos = vertex;
+    let _dummy = shader_type;
+    let _dummy2 = enable_glyph_texture;
+
     if (render_to_texture) {
         result.position = vec4<f32>(2.0 * vertex.x / viewSize.x - 1.0, 2.0 * vertex.y / viewSize.y - 1.0, 0, 1);
     } else {

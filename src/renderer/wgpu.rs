@@ -1188,17 +1188,22 @@ impl PipelineState {
         pipeline_layout: &wgpu::PipelineLayout,
         shader_module: &wgpu::ShaderModule,
     ) -> wgpu::RenderPipeline {
-        let constants = HashMap::from([
+        let vertex_constants = HashMap::from([(
+            "render_to_texture".to_string(),
+            if self.render_to_texture { 1.0 } else { 0. },
+        )]);
+
+        let frag_constants = HashMap::from([
             ("shader_type".to_string(), self.shader_type.to_f32() as f64),
             (
                 "enable_glyph_texture".to_string(),
-                if self.enable_glyph_texture { 1.0 } else { 0.0 },
-            ),
-            (
-                "render_to_texture".to_string(),
-                if self.render_to_texture { 1.0 } else { 0. },
+                if self.enable_glyph_texture { 1.0 } else { 0. },
             ),
         ]);
+
+        // println!("{:?}", constants);
+        // #[cfg(target_arch = "wasm32")]
+        // web_sys::console::log_1(&format!("{:?}", constants).into());
 
         device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: None,
@@ -1212,7 +1217,7 @@ impl PipelineState {
                     attributes: &wgpu::vertex_attr_array![0 => Float32x2, 1 => Float32x2],
                 }],
                 compilation_options: PipelineCompilationOptions {
-                    constants: &constants,
+                    constants: &vertex_constants,
                     ..Default::default()
                 },
             },
@@ -1220,7 +1225,7 @@ impl PipelineState {
                 module: shader_module,
                 entry_point: Some("fs_main"),
                 compilation_options: PipelineCompilationOptions {
-                    constants: &constants,
+                    constants: &frag_constants,
                     ..Default::default()
                 },
                 targets: &[Some(self.color_target_state.clone())],
