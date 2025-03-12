@@ -154,6 +154,7 @@ pub struct WGPURenderer {
     queue: wgpu::Queue,
 
     shader_module: Rc<wgpu::ShaderModule>,
+    frag_shader_module: Rc<wgpu::ShaderModule>,
 
     screen_view: [f32; 2],
 
@@ -171,7 +172,9 @@ impl WGPURenderer {
     /// Creates a new renderer for the device.
     pub fn new(device: wgpu::Device, queue: wgpu::Queue) -> Self {
         let module = wgpu::include_wgsl!("wgpu/shader.wgsl");
+        let frag_module = wgpu::include_wgsl!("wgpu/shader-f.wgsl");
         let shader_module = Rc::new(device.create_shader_module(module));
+        let frag_shader_module = Rc::new(device.create_shader_module(frag_module));
 
         let texture_descriptor = wgpu::TextureDescriptor {
             size: wgpu::Extent3d::default(),
@@ -273,7 +276,7 @@ impl WGPURenderer {
             queue,
 
             shader_module,
-
+            frag_shader_module,
             screen_view: [0.0, 0.0],
 
             empty_texture,
@@ -361,6 +364,7 @@ impl Renderer for WGPURenderer {
             self.device.clone(),
             self.empty_texture.clone(),
             self.shader_module.clone(),
+            self.frag_shader_module.clone(),
             self.bind_group_layout.clone(),
             self.pipeline_layout.clone(),
             self.pipeline_cache.clone(),
@@ -1187,6 +1191,7 @@ impl PipelineState {
         device: &wgpu::Device,
         pipeline_layout: &wgpu::PipelineLayout,
         shader_module: &wgpu::ShaderModule,
+        frag_shader_module: &wgpu::ShaderModule,
     ) -> wgpu::RenderPipeline {
         let vertex_constants = HashMap::from([(
             "render_to_texture".to_string(),
@@ -1222,7 +1227,7 @@ impl PipelineState {
                 },
             },
             fragment: Some(wgpu::FragmentState {
-                module: shader_module,
+                module: frag_shader_module,
                 entry_point: Some("fs_main"),
                 compilation_options: PipelineCompilationOptions {
                     constants: &frag_constants,
@@ -1557,6 +1562,7 @@ struct CommandToPipelineAndBindGroupMapper {
     device: wgpu::Device,
     empty_texture: wgpu::Texture,
     shader_module: Rc<wgpu::ShaderModule>,
+    frag_shader_module: Rc<wgpu::ShaderModule>,
 
     current_bind_group_state: Option<BindGroupState>,
     current_bind_group: Option<wgpu::BindGroup>,
@@ -1570,6 +1576,7 @@ impl CommandToPipelineAndBindGroupMapper {
         device: wgpu::Device,
         empty_texture: wgpu::Texture,
         shader_module: Rc<wgpu::ShaderModule>,
+        frag_shader_module: Rc<wgpu::ShaderModule>,
         bind_group_layout: wgpu::BindGroupLayout,
         pipeline_layout: wgpu::PipelineLayout,
         pipeline_cache: Rc<RefCell<HashMap<PipelineState, CachedPipeline>>>,
@@ -1578,6 +1585,7 @@ impl CommandToPipelineAndBindGroupMapper {
             device: device.clone(),
             empty_texture,
             shader_module,
+            frag_shader_module,
             current_bind_group_state: None,
             current_bind_group: None,
             bind_group_layout,
@@ -1634,7 +1642,12 @@ impl CommandToPipelineAndBindGroupMapper {
 
         let mut pipeline_cache = self.pipeline_cache.borrow_mut();
         let render_pipeline = pipeline_cache.entry(pipeline_state.clone()).or_insert_with(|| {
-            let pipeline = pipeline_state.materialize(&self.device, &self.pipeline_layout, &self.shader_module);
+            let pipeline = pipeline_state.materialize(
+                &self.device,
+                &self.pipeline_layout,
+                &self.shader_module,
+                &self.frag_shader_module,
+            );
             CachedPipeline {
                 pipeline,
                 accessed: false,
