@@ -171,7 +171,7 @@ pub struct WGPURenderer {
 impl WGPURenderer {
     /// Creates a new renderer for the device.
     pub fn new(device: wgpu::Device, queue: wgpu::Queue) -> Self {
-        let module = wgpu::include_wgsl!("wgpu/shader.wgsl");
+        let module = wgpu::include_wgsl!("wgpu/shader-v.wgsl");
         let frag_module = wgpu::include_wgsl!("wgpu/shader-f.wgsl");
         let shader_module = Rc::new(device.create_shader_module(module));
         let frag_shader_module = Rc::new(device.create_shader_module(frag_module));

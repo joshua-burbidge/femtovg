@@ -54,7 +54,6 @@ var glyph_texture: texture_2d<f32>;
 @binding(4)
 var glyph_sampler: sampler;
 
-
 @fragment
 fn fs_main(vertex: VertexOutput) -> @location(0) vec4<f32> {
     var result: vec4<f32>;
