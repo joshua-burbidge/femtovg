@@ -19,7 +19,7 @@ struct Params {
 }
 
 // override shader_type: i32;
-override enable_glyph_texture: bool; // glyph_texture_type != 0
+// override enable_glyph_texture: bool; // glyph_texture_type != 0
 override render_to_texture: bool;
 
 const SHADER_TYPE_FillGradient: i32 = 0;
@@ -140,8 +140,7 @@ fn fs_main(vertex: VertexOutput) -> @location(0) vec4<f32> {
 
     var scissor: f32 = scissorMask(vertex.fpos, params);
 
-    if (enable_glyph_texture) {
-    // if (params.glyph_texture_type != 0) {
+    if (params.glyph_texture_type != 0.0) {
         // Textured tris
         var mask: vec4<f32> = textureSample(glyph_texture, glyph_sampler, vertex.ftcoord);
 
