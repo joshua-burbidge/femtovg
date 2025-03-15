@@ -18,8 +18,6 @@ struct Params {
     image_blur_filter_coeff: vec3<f32>,
 }
 
-// override shader_type: i32;
-// override enable_glyph_texture: bool; // glyph_texture_type != 0
 override render_to_texture: bool;
 
 const SHADER_TYPE_FillGradient: i32 = 0;

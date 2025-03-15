@@ -5,8 +5,8 @@ version = "0.13.0"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 authors = [
-  "Peter Todorov <ptodorov@cytec.bg>",
-  "Adam Nemecek <adamnemecek@gmail.com>",
+    "Peter Todorov <ptodorov@cytec.bg>",
+    "Adam Nemecek <adamnemecek@gmail.com>",
 ]
 keywords = ["graphics", "canvas", "vector", "drawing", "gpu"]
 categories = ["graphics"]
@@ -32,23 +32,21 @@ image = { version = "0.25.0", optional = true, default-features = false }
 serde = { version = "1.0", optional = true, features = ["derive", "rc"] }
 glow = { version = "0.16.0", default-features = false }
 log = "0.4"
-wgpu = { version = "24", optional = true, default-features = false, features = [
-  "wgsl",
-] }
+wgpu = { version = "24", optional = true, default-features = false, features = ["wgsl"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 glutin = { version = "0.31", optional = true, default-features = false }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 web_sys = { version = "0.3", package = "web-sys", features = [
-  "WebGlContextAttributes",
-  "HtmlImageElement",
-  "WebGl2RenderingContext",
+    "WebGlContextAttributes",
+    "HtmlImageElement",
+    "WebGl2RenderingContext",
 ] }
 wasm-bindgen = "0.2"
 
 [features]
-default = ["image-loading", "wgpu"]
+default = ["image-loading"]
 image-loading = ["image"]
 debug_inspector = []
 wgpu = ["dep:wgpu"]
@@ -62,8 +60,8 @@ usvg = { version = "0.33.0" }
 instant = { version = "0.1", features = ["now"] }
 resource = "0.5.0"
 image = { version = "0.25.0", default-features = false, features = [
-  "jpeg",
-  "png",
+    "jpeg",
+    "png",
 ] }
 cosmic-text = "0.12.1"
 swash = "=0.1.17" # keep this in sync with cosmic-text
@@ -78,8 +76,8 @@ raw-window-handle = "0.5.0"
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 web_sys = { version = "0.3", package = "web-sys", features = [
-  "console",
-  "WebGlContextAttributes",
+    "console",
+    "WebGlContextAttributes",
 ] }
 console_error_panic_hook = "0.1.5"
 instant = { version = "0.1", features = ["wasm-bindgen", "now"] }

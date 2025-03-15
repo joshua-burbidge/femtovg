@@ -95,10 +95,6 @@ impl UniformArray {
         self.0[43] = shader_type;
     }
 
-    pub fn get_shader_type(&self) -> f32 {
-        self.0[43]
-    }
-
     pub fn set_glyph_texture_type(&mut self, glyph_texture_type: f32) {
         self.0[44] = glyph_texture_type;
     }
@@ -1192,19 +1188,10 @@ impl PipelineState {
         pipeline_layout: &wgpu::PipelineLayout,
         shader_module: &wgpu::ShaderModule,
     ) -> wgpu::RenderPipeline {
-        println!("self: {:?}", self.shader_type.to_f32());
-
-        let constants = HashMap::from([
-            // ("shader_type".to_string(), self.shader_type.to_f32() as f64),
-            // (
-            //     "enable_glyph_texture".to_string(),
-            //     if self.enable_glyph_texture { 1.0 } else { 0.0 },
-            // ),
-            (
-                "render_to_texture".to_string(),
-                if self.render_to_texture { 1.0 } else { 0. },
-            ),
-        ]);
+        let constants = HashMap::from([(
+            "render_to_texture".to_string(),
+            if self.render_to_texture { 1.0 } else { 0. },
+        )]);
 
         device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: None,
@@ -1607,12 +1594,10 @@ impl CommandToPipelineAndBindGroupMapper {
             render_pass.set_stencil_reference(0);
         }
 
-        let uniform_array = UniformArray::from(params);
-        println!("params: {:?}", &uniform_array.get_shader_type());
         let bind_group_state = BindGroupState {
             image,
             glyph_texture,
-            uniforms: uniform_array,
+            uniforms: UniformArray::from(params),
         };
 
         if self.current_bind_group_state != Some(bind_group_state.clone()) {
